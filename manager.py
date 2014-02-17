@@ -64,8 +64,8 @@ Usefull when a name is given in the csv file for a many2one relation.
 Search all the records in ir.model.data for a given model, then returns an object with ref as key and id as value.
         '''
         ids = self.search('ir.model.data', [('model', '=', model)])
-        data = self.read('ir.model.data', ids, ['res_id', 'name'])
-        return self.list_to_object(data, 'ref', 'res_id')
+        data = self.read('ir.model.data', ids, ['name', 'res_id'])
+        return self.list_to_object(data, 'name', 'res_id')
     
     def search(self, model, args):
         return self.sock.execute(self.db, self.uid, self.pwd, model, 'search', args)    

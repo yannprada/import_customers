@@ -14,9 +14,11 @@ class CustomerManager(Manager):
         self.existing_partners_records = self.prepare_ir_model_data('res.partner')
         self.title_records = self.prepare_many2one('res.partner.title')
         self.country_records = self.prepare_many2one('res.country')
+        self.title_records[''] = False
+        self.country_records[''] = False
     
     def run(self, fileName):
-        c = CsvParser(fileName, delimiter=';')
+        c = CsvParser(fileName)
         for row, count in c.rows():
             data = {
                 'title': self.title_records[row['title']],
@@ -24,7 +26,7 @@ class CustomerManager(Manager):
                 'street': row['street'],
                 'zip': row['zip'],
                 'city': row['city'],
-                'country': self.country_records[row['country']],,
+                'country': self.country_records[row['country']],
                 'phone': row['phone'],
                 'mobile': row['mobile'],
                 'fax': row['fax'],
