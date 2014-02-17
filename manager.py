@@ -57,7 +57,9 @@ Usefull when a name is given in the csv file for a many2one relation.
         '''
         ids = self.search(model, [])
         data = self.read(model, ids, ['name'])
-        return self.list_to_object(data, 'name', 'id')
+        data = self.list_to_object(data, 'name', 'id')
+        data[''] = False
+        return data
     
     def prepare_ir_model_data(self, model):
         '''

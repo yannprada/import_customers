@@ -12,32 +12,36 @@ class CustomerManager(Manager):
     def __init__(self, host, dbname, password):
         super(CustomerManager, self).__init__(host, dbname, password)
         self.existing_partners_records = self.prepare_ir_model_data('res.partner')
-        self.title_records = self.prepare_many2one('res.partner.title')
-        self.country_records = self.prepare_many2one('res.country')
-        self.title_records[''] = False
-        self.country_records[''] = False
+        title_records = self.prepare_many2one('res.partner.title')
+        country_records = self.prepare_many2one('res.country')
+        self.fieldsNames = {
+            'title': {'fieldName': 'title', 'records': title_records},
+            'country': {'fieldName': 'country', 'records': country_records},
+            'name': 'name',
+            'street': 'street',
+            'zip': 'zip',
+            'city': 'city',
+            'phone': 'phone',
+            'mobile': 'mobile',
+            'fax': 'fax',
+            'email': 'email',
+            'website': 'website',
+            'customer': 'customer',
+            'is_company': 'is_company',
+        }
     
     def run(self, fileName):
         c = CsvParser(fileName)
         for row, count in c.rows():
-            data = {
-                'title': self.title_records[row['title']],
-                'name': row['name'],
-                'street': row['street'],
-                'zip': row['zip'],
-                'city': row['city'],
-                'country': self.country_records[row['country']],
-                'phone': row['phone'],
-                'mobile': row['mobile'],
-                'fax': row['fax'],
-                'email': row['email'],
-                'website': row['website'],
-                'customer': row['customer'],
-                'is_company': row['is_company'],
-            }
+            data = {}
+            for key in self.fieldsNames:
+                value = self.fieldsNames[key]
+                if type(value) == dict:
+                    data[key] = value['records'][row[value['fieldName']]]
+                else:
+                    data[key] = row[value]
             ref = row['ref']
-            ID = self.insertOrUpdate(
-                    ref,'res.partner', data, self.existing_partners_records)
+            ID = self.insertOrUpdate(ref,'res.partner', data, self.existing_partners_records)
             
             if __name__ == '__main__':
                 print(str(count) + ' --- ID: ' + str(ID))
